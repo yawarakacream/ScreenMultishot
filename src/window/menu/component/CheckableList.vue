@@ -31,22 +31,21 @@ export default defineComponent({
 .list {
   flex: 1;
   padding: calc(var(--padding) / 2);
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: calc(var(--padding) / 2);
   border: 1px solid black;
 }
 .item-container {
-  height: 32px;
+  height: 24px;
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: calc(var(--padding) / 2);
 }
 .item-checkbox {
-  height: 100%;
-  width: 24px;
+  height: var(--font-size);
+  width: var(--font-size);
 }
 .item-name {
   flex: 1;

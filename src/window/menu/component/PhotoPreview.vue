@@ -22,7 +22,7 @@ export default defineComponent({
   flex-direction: column;
 }
 .title {
-  height: 32px;
+  height: 24px;
 }
 .image {
   flex: 1;

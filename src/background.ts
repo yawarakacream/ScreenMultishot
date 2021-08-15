@@ -23,8 +23,8 @@ export const createWindow = async (url: string, options: Electron.BrowserWindowC
 app.on("window-all-closed", () => app.quit());
 
 app.on("ready", async () => {
-  // createFrameWindow();
-  createMenuWindow();
+  // await createFrameWindow();
+  await createMenuWindow();
 });
 
 // Exit cleanly on request from parent process in development mode.

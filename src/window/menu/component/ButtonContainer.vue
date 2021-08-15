@@ -6,7 +6,7 @@
 
 <style scoped>
 .container {
-  height: 64px;
+  height: 48px;
   display: flex;
   gap: var(--padding);
   flex-direction: row;

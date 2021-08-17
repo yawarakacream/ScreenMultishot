@@ -1,9 +1,9 @@
 <template>
   <div class="container">
     <display-title :value="title" />
-    <div class="input-container" :data-valid="valid">
-      <input class="input" type="text" v-model="computedValue" />
-      <input class="suffix" type="text" :size="suffix.length" :value="suffix" disabled />
+    <div class="input-container">
+      <i class="button fas fa-folder-open" @click="() => $emit('click')" />
+      <input class="path" type="text" v-model="computedValue" :data-valid="valid" />
     </div>
   </div>
 </template>
@@ -13,13 +13,13 @@ import { defineComponent } from "vue";
 import DisplayTitle from "./DisplayTitle.vue";
 
 export default defineComponent({
-  components: { DisplayTitle },
   props: {
     title: String,
     modelValue: String,
-    suffix: String,
     valid: Boolean,
   },
+  components: { DisplayTitle },
+  emits: ["update:modelValue", "click"],
   computed: {
     computedValue: {
       get: function () {
@@ -42,22 +42,36 @@ export default defineComponent({
 }
 .input-container {
   flex: 1;
+  position: relative;
   display: flex;
-  width: 100%;
+  gap: 4px;
 }
-.input-container > input {
+.button {
+  position: relative;
+  height: 100%;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  transition: opacity 0.1s ease;
+}
+.button:hover {
+  opacity: 0.5;
+}
+.path {
+  width: 32px;
+  margin: 0;
+  padding: 0;
+  flex: 1;
   outline: none;
   border: none;
   border-bottom: 1px solid black;
+  margin: 0;
+  padding: 0;
 }
-.input-container[data-valid="false"] > input {
+.path[data-valid="false"] {
   border-bottom-color: red;
-}
-.input {
-  flex: 1;
-}
-.suffix {
-  background: none;
-  text-align: right;
 }
 </style>

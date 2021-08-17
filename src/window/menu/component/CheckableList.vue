@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="title">{{ title }}</div>
+    <display-title :value="title" />
     <div class="list">
       <div class="item-container" v-for="item in list" :key="item.name">
         <input class="item-checkbox" type="checkbox" />
@@ -12,9 +12,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import DisplayTitle from "./DisplayTitle.vue";
 
 export default defineComponent({
   props: ["title", "list"],
+  components: { DisplayTitle },
 });
 </script>
 

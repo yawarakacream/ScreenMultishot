@@ -1,17 +1,19 @@
-import { BrowserWindow } from "electron";
-import { createWindow } from "@/background";
+import { BrowserWindow, dialog } from "electron";
+import { config, createWindow } from "@/background";
 import MainCommunicator from "@/communicator/main-communicator";
+import { MenuParameter } from "./menu-common";
+import fs from "fs";
 
 let window: BrowserWindow | undefined = undefined;
 
 export const createMenuWindow = async () => {
+  if (window) throw new Error();
+
   window = await createWindow("menu", {
-    width: 512,
-    height: 512,
+    width: config.get("menuBounds").width,
+    height: config.get("menuBounds").height,
     title: "ScreenMultishot",
     webPreferences: {
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION as unknown as boolean,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
     },
@@ -20,4 +22,41 @@ export const createMenuWindow = async () => {
     minWidth: 512,
     minHeight: 512,
   });
+
+  window.on("resize", () => {
+    const bounds = window!.getBounds();
+    config.set("menuBounds", {
+      width: bounds.width,
+      height: bounds.height,
+    });
+  });
 };
+
+new MainCommunicator<MenuParameter>("menu", {
+  getConfig(key) {
+    return config.get(key);
+  },
+  setConfig({ key, value }) {
+    config.set(key, value);
+  },
+  openStorageDirectoryDialog() {
+    const directories = dialog.showOpenDialogSync(window!, {
+      properties: ["openDirectory"],
+    });
+    return directories ? directories[0] : null;
+  },
+  isValidStorageDirectory(path) {
+    if (!fs.existsSync(path)) {
+      return false;
+    }
+    console.log("a");
+    try {
+      fs.accessSync(path, fs.constants.R_OK | fs.constants.W_OK);
+      console.log("b");
+      return true;
+    } catch (e) {
+      console.log("c");
+      return false;
+    }
+  },
+});

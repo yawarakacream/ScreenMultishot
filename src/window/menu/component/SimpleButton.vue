@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" :data-disabled="disabled" @click.prevent="onClick">
     <i :class="`button fas fa-${icon}`" />
     <span class="title">{{ title }}</span>
   </div>
@@ -9,7 +9,19 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  props: ["title", "icon"],
+  props: {
+    title: String,
+    icon: String,
+    disabled: Boolean,
+  },
+  emits: ["click"],
+  methods: {
+    onClick: function () {
+      if (!this.disabled) {
+        this.$emit("click");
+      }
+    },
+  },
 });
 </script>
 
@@ -23,7 +35,11 @@ export default defineComponent({
   cursor: pointer;
   transition: opacity 0.1s ease;
 }
-.container:hover {
+.container[data-disabled="true"] {
+  cursor: auto;
+  opacity: 0.2;
+}
+.container[data-disabled="false"]:hover {
   opacity: 0.5;
 }
 .button {

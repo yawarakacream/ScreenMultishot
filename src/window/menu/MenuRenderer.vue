@@ -2,11 +2,21 @@
   <div id="menu-main">
     <div id="left">
       <button-container>
-        <simple-button :title="'撮影'" :icon="'camera'" />
+        <simple-button
+          :title="'撮影'"
+          :icon="'camera'"
+          :disabled="!isValidStorageDirectory || !isValidPhotoName || !isValidPdfName"
+          @click="onCameraClicked"
+        />
         <simple-button :title="'ヘルプ'" :icon="'question-circle'" />
       </button-container>
-      <directory-path-input :title="'保存先ディレクトリ'" :directory="directory" @update-directory="setDirectory" />
-      <oneline-text-input :title="'画像の名前'" :suffix="'.png'" :value="photoName" @update-value="setPhotoName" />
+      <oneline-text-input-with-button
+        :title="'保存先ディレクトリ'"
+        v-model="storageDirectory"
+        @click="openStorageDirectoryDialog"
+        :valid="isValidStorageDirectory"
+      />
+      <oneline-text-input :title="'画像の名前'" :suffix="'.png'" v-model="photoName" :valid="isValidPhotoName" />
       <photo-preview />
     </div>
     <div id="middle"></div>
@@ -14,7 +24,7 @@
       <button-container>
         <simple-button :title="'pdf 作成'" :icon="'file-pdf'" />
       </button-container>
-      <oneline-text-input :title="'pdf の名前'" :suffix="'.pdf'" :value="pdfName" @update-value="setPdfName" />
+      <oneline-text-input :title="'pdf の名前'" :suffix="'.pdf'" v-model="pdfName" :valid="isValidPdfName" />
       <checkable-list :title="'画像一覧'" :list="photoList" />
     </div>
   </div>
@@ -24,40 +34,73 @@
 import { defineComponent } from "vue";
 import ButtonContainer from "./component/ButtonContainer.vue";
 import SimpleButton from "./component/SimpleButton.vue";
-import DirectoryPathInput from "./component/DirectoryPathInput.vue";
+import OnelineTextInputWithButton from "./component/OnelineTextInputWithButton.vue";
 import OnelineTextInput from "./component/OnelineTextInput.vue";
 import PhotoPreview from "./component/PhotoPreview.vue";
 import CheckableList from "./component/CheckableList.vue";
+import { MenuParameter } from "./menu-common";
+import RendererCommunicator from "@/communicator/renderer-communicator";
+import { Config } from "@/config/config";
+import { isValidFileName } from "@/utility";
+
+const communicator = new RendererCommunicator<MenuParameter>("menu");
+
+const getConfig = <K extends keyof Config>(key: K): Config[K] => {
+  return communicator.send("getConfig", key);
+};
+
+const setConfig = <K extends keyof Config>(key: K, value: Config[K]) => {
+  communicator.send("setConfig", { key, value });
+};
 
 export default defineComponent({
   data: function () {
+    const storageDirectory = getConfig("storageDirectory");
+    const isValidStorageDirectory =
+      !!storageDirectory && communicator.send("isValidStorageDirectory", storageDirectory);
+    const photoName = getConfig("photoName");
+    const isValidPhotoName = !!photoName && isValidFileName(photoName);
+    const pdfName = getConfig("pdfName");
+    const isValidPdfName = !!pdfName && isValidFileName(pdfName);
     return {
-      directory: "./stores",
-      photoName: "aaa",
-      pdfName: "aaa",
+      storageDirectory,
+      isValidStorageDirectory,
+      photoName,
+      isValidPhotoName,
+      pdfName,
+      isValidPdfName,
       photoList: [{ name: "aaaaaaa.png?" }, { name: "aaaaaaa.png?" }],
     };
   },
   components: {
     ButtonContainer,
     SimpleButton,
-    DirectoryPathInput,
+    OnelineTextInputWithButton,
     OnelineTextInput,
     PhotoPreview,
     CheckableList,
   },
   methods: {
-    setDirectory(value: string) {
-      this.directory = value;
-      console.log("set", value);
+    getConfig,
+    openStorageDirectoryDialog: function () {
+      this.storageDirectory = communicator.send("openStorageDirectoryDialog", undefined);
     },
-    setPhotoName(value: string) {
-      this.photoName = value;
-      console.log("photo", this.photoName);
+    onCameraClicked: function () {
+      console.log("camera");
     },
-    setPdfName(value: string) {
-      this.pdfName = value;
-      console.log("pdf", this.pdfName);
+  },
+  watch: {
+    storageDirectory: function (value) {
+      this.isValidStorageDirectory = communicator.send("isValidStorageDirectory", value);
+      setConfig("storageDirectory", value);
+    },
+    photoName: function (value) {
+      this.isValidPhotoName = !!value && isValidFileName(value);
+      setConfig("photoName", value);
+    },
+    pdfName: function (value) {
+      this.isValidPdfName = !!value && isValidFileName(value);
+      setConfig("pdfName", value);
     },
   },
 });

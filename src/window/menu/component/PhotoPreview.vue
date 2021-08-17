@@ -26,6 +26,7 @@ export default defineComponent({
 }
 .image {
   flex: 1;
+  outline: none;
   border: 1px solid black;
 }
 </style>

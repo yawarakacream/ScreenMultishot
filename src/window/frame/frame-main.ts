@@ -1,7 +1,7 @@
 import { BrowserWindow } from "electron";
 import { config, createWindow } from "@/background";
 import MainCommunicator from "@/communicator/main-communicator";
-import { FrameParameter } from "./frame-common";
+import { M2RFrameParameter, R2MFrameParameter } from "./frame-common";
 
 let window: BrowserWindow | undefined = undefined;
 
@@ -27,26 +27,30 @@ export const createFrameWindow = async () => {
     roundedCorners: false,
     thickFrame: false,
     acceptFirstMouse: true,
+    minWidth: 16,
+    minHeight: 16,
   });
 
   window.on("move", () => config.set("frameBounds", window!.getBounds()));
   window.on("resize", () => config.set("frameBounds", window!.getBounds()));
 
+  config.registerWatcher((key) => {
+    if (key === "frameStyle") {
+      communicator.send("setStyle", config.get("frameStyle"));
+    } else if (key === "frameMode") {
+      communicator.send("setMode", config.get("frameMode"));
+      if (config.get("frameMode") === "freeze") {
+        window?.setIgnoreMouseEvents(true, { forward: true });
+      } else {
+        window?.setIgnoreMouseEvents(false);
+      }
+    }
+  });
+
   return window;
 };
 
-new MainCommunicator<FrameParameter>("frame", {
-  getConfig(key) {
-    return config.get(key);
-  },
-  setConfig({ key, value }) {
-    config.set(key, value);
-  },
-  onFrame: (value) => {
-    if (value) {
-      window?.setIgnoreMouseEvents(false);
-    } else {
-      window?.setIgnoreMouseEvents(true, { forward: true });
-    }
-  },
+const communicator = new MainCommunicator<R2MFrameParameter, M2RFrameParameter>("frame", {
+  getConfig: (key) => config.get(key),
+  setConfig: ({ key, value }) => config.set(key, value),
 });

@@ -1,46 +1,64 @@
 <template>
-  <div id="frame" @mouseenter="frameenter"></div>
-  <div id="transparent" @mouseenter="frameleave"></div>
+  <div class="freeze" v-if="mode === 'freeze'" :style="style" />
+  <div class="movable" v-if="mode === 'movable'" />
 </template>
 
 <script lang="ts">
 import RendererCommunicator from "@/communicator/renderer-communicator";
-import { FrameParameter } from "./frame-common";
+import { FrameMode, FrameParameter } from "./frame-common";
 import { defineComponent } from "vue";
+import { Config } from "@/config/config";
 
 const communicator = new RendererCommunicator<FrameParameter>("frame");
 
+const getConfig = <K extends keyof Config>(key: K): Config[K] => {
+  return communicator.send("getConfig", key);
+};
+
+const setConfig = <K extends keyof Config>(key: K, value: Config[K]) => {
+  communicator.send("setConfig", { key, value });
+};
+
 export default defineComponent({
   name: "Frame",
-  methods: {
-    frameenter: function (event: MouseEvent) {
-      communicator.send("onFrame", true);
-    },
-    frameleave: function (event: MouseEvent) {
-      communicator.send("onFrame", false);
-    },
+  data: function () {
+    const frameColor = getConfig("frameColor");
+    return {
+      mode: "freeze" as FrameMode,
+      style: {
+        "--background-color": frameColor.rgb,
+        "--background-alpha": frameColor.alpha * 0.01,
+      },
+    };
   },
 });
 </script>
 
-<style>
-:root {
+<style scoped>
+.container {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+.freeze {
   --size: 8px;
-}
-#frame {
   position: absolute;
   height: calc(100% - var(--size) * 2);
   width: calc(100% - var(--size) * 2);
-  border: var(--size) solid rgba(0, 0, 0, 20%);
-  background: rgba(0, 0, 0, 0);
+  border: var(--size) solid var(--background-color);
+  opacity: var(--background-alpha);
+  background: none;
   box-shadow: none;
-  pointer-events: all;
 }
-#transparent {
+.movable {
+  --size: 8px;
   position: absolute;
-  top: var(--size);
-  left: var(--size);
   height: calc(100% - var(--size) * 2);
   width: calc(100% - var(--size) * 2);
+  border: var(--size) solid black;
+  background: rgba(0, 0, 0, 50%);
+  user-select: none;
+  cursor: move;
+  -webkit-app-region: drag;
 }
 </style>

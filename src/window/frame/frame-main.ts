@@ -1,17 +1,18 @@
 import { BrowserWindow } from "electron";
-import { createWindow } from "@/background";
+import { config, createWindow } from "@/background";
 import MainCommunicator from "@/communicator/main-communicator";
 import { FrameParameter } from "./frame-common";
 
 let window: BrowserWindow | undefined = undefined;
 
 export const createFrameWindow = async () => {
+  const bounds = config.get("frameBounds");
   window = await createWindow("frame", {
-    width: 200,
-    height: 200,
+    width: bounds.width,
+    height: bounds.height,
+    x: bounds.x != -1 ? bounds.x : undefined,
+    y: bounds.y != -1 ? bounds.y : undefined,
     webPreferences: {
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION as unknown as boolean,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
     },
@@ -28,18 +29,24 @@ export const createFrameWindow = async () => {
     acceptFirstMouse: true,
   });
 
-  window.on("move", (event: Electron.Event) => {
-    const bounds = window!.getBounds();
-  });
+  window.on("move", () => config.set("frameBounds", window!.getBounds()));
+  window.on("resize", () => config.set("frameBounds", window!.getBounds()));
+
+  return window;
 };
 
-const communicator = new MainCommunicator<FrameParameter>("frame", {
+new MainCommunicator<FrameParameter>("frame", {
+  getConfig(key) {
+    return config.get(key);
+  },
+  setConfig({ key, value }) {
+    config.set(key, value);
+  },
   onFrame: (value) => {
     if (value) {
       window?.setIgnoreMouseEvents(false);
     } else {
       window?.setIgnoreMouseEvents(true, { forward: true });
     }
-    console.log(value);
   },
 });

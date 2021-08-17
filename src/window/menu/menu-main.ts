@@ -1,8 +1,9 @@
 import { BrowserWindow, dialog } from "electron";
 import { config, createWindow } from "@/background";
 import MainCommunicator from "@/communicator/main-communicator";
-import { MenuParameter } from "./menu-common";
+import { R2MMenuParameter } from "./menu-common";
 import fs from "fs";
+import { EmptyObject } from "@/utility";
 
 let window: BrowserWindow | undefined = undefined;
 
@@ -34,7 +35,7 @@ export const createMenuWindow = async () => {
   return window;
 };
 
-new MainCommunicator<MenuParameter>("menu", {
+new MainCommunicator<R2MMenuParameter, EmptyObject>("menu", {
   getConfig(key) {
     return config.get(key);
   },

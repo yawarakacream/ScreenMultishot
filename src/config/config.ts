@@ -1,3 +1,5 @@
+import { FrameMode, FrameModes } from "@/window/frame/frame-common";
+
 export interface Config {
   version: number;
   menuBounds: {
@@ -10,10 +12,12 @@ export interface Config {
     width: number;
     height: number;
   };
-  frameColor: {
+  frameStyle: {
     rgb: string;
     alpha: number;
+    size: number;
   };
+  frameMode: FrameMode;
   storageDirectory: string | null;
   photoName: string | null;
   pdfName: string | null;
@@ -32,10 +36,12 @@ export const isConfig = (object: any): object is Config =>
   typeof object.frameBounds.y === "number" &&
   typeof object.frameBounds.width === "number" &&
   typeof object.frameBounds.height === "number" &&
-  !!object.frameColor &&
-  typeof object.frameColor === "object" &&
-  typeof object.frameColor.rgb === "string" &&
-  typeof object.frameColor.alpha === "number" &&
+  !!object.frameStyle &&
+  typeof object.frameStyle === "object" &&
+  typeof object.frameStyle.rgb === "string" &&
+  typeof object.frameStyle.alpha === "number" &&
+  typeof object.frameStyle.size === "number" &&
+  FrameModes.includes(object.frameMode) &&
   typeof object.storageDirectory === "string" &&
   typeof object.photoName === "string" &&
   typeof object.pdfName === "string";

@@ -29,20 +29,24 @@ export class ConfigContainer {
         width: 512,
         height: 512,
       },
-      windowBounds: {
+      frameBounds: {
         x: -1,
         y: -1,
         width: 256,
         height: 256,
       },
-      storageDirectory: "./storage",
+      frameColor: {
+        rgb: "#000000",
+        alpha: 50,
+      },
+      storageDirectory: path.resolve(isDevelopment ? "./storage_for_dev" : process.cwd(), "./storage"),
       photoName: "aaa",
       pdfName: "bbb",
     };
   }
 
   save() {
-    fs.writeFileSync(configFilePath, JSON.stringify(this.config), encoding);
+    fs.writeFileSync(configFilePath, JSON.stringify(this.config, null, 2), encoding);
   }
 
   get<K extends keyof Config>(key: K): Config[K] {

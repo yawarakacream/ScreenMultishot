@@ -1,6 +1,9 @@
 <template>
-  <div class="container" :data-disabled="disabled" @click.prevent="onClick">
-    <i :class="`button fas fa-${icon}`" />
+  <div class="container">
+    <i
+      :class="`button far fa-${computedValue ? 'square' : 'check-square'}`"
+      @click="() => (computedValue = !computedValue)"
+    />
     <span class="title">{{ title }}</span>
   </div>
 </template>
@@ -11,15 +14,16 @@ import { defineComponent } from "vue";
 export default defineComponent({
   props: {
     title: String,
-    icon: String,
-    disabled: Boolean,
+    modelValue: Boolean,
   },
-  emits: ["click"],
-  methods: {
-    onClick: function () {
-      if (!this.disabled) {
-        this.$emit("click");
-      }
+  computed: {
+    computedValue: {
+      get: function () {
+        return this.modelValue;
+      },
+      set: function (value: string) {
+        this.$emit("update:modelValue", value);
+      },
     },
   },
 });
@@ -36,16 +40,12 @@ export default defineComponent({
   cursor: pointer;
   transition: opacity 0.1s ease;
 }
-.container[data-disabled="true"] {
-  cursor: auto;
-  opacity: 0.2;
-}
-.container[data-disabled="false"]:hover {
-  opacity: 0.5;
-}
 .button {
   display: flex;
   align-items: center;
+  margin: 0;
+  padding: 0;
+  height: 32px;
   width: 32px;
   font-size: 32px;
 }

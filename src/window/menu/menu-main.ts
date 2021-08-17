@@ -30,6 +30,8 @@ export const createMenuWindow = async () => {
       height: bounds.height,
     });
   });
+
+  return window;
 };
 
 new MainCommunicator<MenuParameter>("menu", {
@@ -49,13 +51,10 @@ new MainCommunicator<MenuParameter>("menu", {
     if (!fs.existsSync(path)) {
       return false;
     }
-    console.log("a");
     try {
       fs.accessSync(path, fs.constants.R_OK | fs.constants.W_OK);
-      console.log("b");
       return true;
     } catch (e) {
-      console.log("c");
       return false;
     }
   },

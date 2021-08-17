@@ -24,25 +24,30 @@ export const createWindow = async (url: string, options: Electron.BrowserWindowC
   return win;
 };
 
-const quit = () => {
-  config.save();
-  app.quit();
-};
+app.on("window-all-closed", () => app.quit());
 
-app.on("window-all-closed", quit);
+let frame: BrowserWindow;
+let menu: BrowserWindow;
 
 app.on("ready", async () => {
-  await createFrameWindow();
-  await createMenuWindow();
+  frame = await createFrameWindow();
+  menu = await createMenuWindow();
+
+  menu.on("closed", () => {
+    frame.destroy();
+    app.quit();
+  });
 });
+
+app.on("before-quit", () => config.save());
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === "win32") {
     process.on("message", (data) => {
-      if (data === "graceful-exit") quit();
+      if (data === "graceful-exit") app.quit();
     });
   } else {
-    process.on("SIGTERM", quit);
+    process.on("SIGTERM", () => app.quit());
   }
 }

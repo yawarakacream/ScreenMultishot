@@ -9,8 +9,13 @@
           @click="onCameraClicked"
         />
         <simple-button :title="'ヘルプ'" :icon="'question-circle'" />
-        <check-button :title="'移動'" v-model="frameMovable" />
-        <color-picker :title="'枠色'" v-model:modelRgb="frameRgb" v-model:modelAlpha="frameAlpha" />
+        <check-button :title="'枠を固定'" v-model="frameFreeze" />
+        <frame-setting
+          :title="'固定枠'"
+          v-model:modelRgb="frameRgb"
+          v-model:modelAlpha="frameAlpha"
+          v-model:modelSize="frameSize"
+        />
       </div>
 
       <oneline-text-input-with-button
@@ -39,17 +44,17 @@
 import { defineComponent } from "vue";
 import RendererCommunicator from "@/communicator/renderer-communicator";
 import { Config } from "@/config/config";
-import { isValidFileName } from "@/utility";
-import { MenuParameter } from "./menu-common";
+import { EmptyObject, isValidFileName } from "@/utility";
+import { R2MMenuParameter } from "./menu-common";
 import SimpleButton from "./component/SimpleButton.vue";
 import OnelineTextInputWithButton from "./component/OnelineTextInputWithButton.vue";
 import OnelineTextInput from "./component/OnelineTextInput.vue";
 import PhotoPreview from "./component/PhotoPreview.vue";
 import CheckableList from "./component/CheckableList.vue";
-import ColorPicker from "./component/ColorPicker.vue";
+import FrameSetting from "./component/FrameSetting.vue";
 import CheckButton from "./component/CheckButton.vue";
 
-const communicator = new RendererCommunicator<MenuParameter>("menu");
+const communicator = new RendererCommunicator<R2MMenuParameter, EmptyObject>("menu", {});
 
 const getConfig = <K extends keyof Config>(key: K): Config[K] => {
   return communicator.send("getConfig", key);
@@ -71,7 +76,8 @@ export default defineComponent({
     const pdfName = getConfig("pdfName");
     const isValidPdfName = !!pdfName && isValidFileName(pdfName);
 
-    const { rgb: frameRgb, alpha: frameAlpha } = getConfig("frameColor");
+    const { rgb: frameRgb, alpha: frameAlpha, size: frameSize } = getConfig("frameStyle");
+    const frameFreeze = getConfig("frameMode") === "freeze";
 
     return {
       storageDirectory,
@@ -85,7 +91,8 @@ export default defineComponent({
 
       frameRgb,
       frameAlpha,
-      frameMovable: false,
+      frameSize,
+      frameFreeze,
 
       photoList: [{ name: "aaaaaaa.png?" }, { name: "aaaaaaa.png?" }],
     };
@@ -96,7 +103,7 @@ export default defineComponent({
     OnelineTextInput,
     PhotoPreview,
     CheckableList,
-    ColorPicker,
+    FrameSetting,
     CheckButton,
   },
   methods: {
@@ -122,10 +129,16 @@ export default defineComponent({
       setConfig("pdfName", value);
     },
     frameRgb: function (value) {
-      setConfig("frameColor", { rgb: value, alpha: this.frameAlpha });
+      setConfig("frameStyle", { rgb: value, alpha: this.frameAlpha, size: this.frameSize });
     },
     frameAlpha: function (value) {
-      setConfig("frameColor", { rgb: this.frameRgb, alpha: value });
+      setConfig("frameStyle", { rgb: this.frameRgb, alpha: value, size: this.frameSize });
+    },
+    frameSize: function (value) {
+      setConfig("frameStyle", { rgb: this.frameRgb, alpha: this.frameAlpha, size: value });
+    },
+    frameFreeze: function (value) {
+      setConfig("frameMode", value ? "freeze" : "movable");
     },
   },
 });

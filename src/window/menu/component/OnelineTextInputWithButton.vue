@@ -3,7 +3,7 @@
     <display-title :value="title" />
     <div class="input-container">
       <i class="button fas fa-folder-open" @click="() => $emit('click')" />
-      <input class="path" type="text" v-model="computedValue" :data-valid="valid" />
+      <input class="path" type="text" spellcheck="false" v-model="computedValue" :data-valid="valid" />
     </div>
   </div>
 </template>

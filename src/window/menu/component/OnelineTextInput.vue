@@ -2,7 +2,7 @@
   <div class="container">
     <display-title :value="title" />
     <div class="input-container" :data-valid="valid">
-      <input class="input" type="text" v-model="computedValue" />
+      <input class="input" type="text" spellcheck="false" v-model="computedValue" />
       <input class="suffix" type="text" :size="suffix.length" :value="suffix" disabled />
     </div>
   </div>

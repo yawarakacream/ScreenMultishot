@@ -1,9 +1,6 @@
 <template>
-  <div class="container">
-    <i
-      :class="`button far fa-${computedValue ? 'square' : 'check-square'}`"
-      @click="() => (computedValue = !computedValue)"
-    />
+  <div class="container" @click="() => (computedValue = !computedValue)">
+    <i :class="`button far fa-${computedValue ? 'check-square' : 'square'}`" />
     <span class="title">{{ title }}</span>
   </div>
 </template>

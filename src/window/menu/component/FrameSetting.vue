@@ -4,12 +4,16 @@
     <div class="container" v-if="visible">
       <div class="field">
         <div class="field-item">
-          色 ({{ computedRgb }})
+          色
           <input class="input" type="color" v-model="computedRgb" />
         </div>
         <div class="field-item">
-          透明度 ({{ computedAlpha }} %)
+          透明度 {{ computedAlpha }} [%]
           <input class="input" type="range" v-model="computedAlpha" />
+        </div>
+        <div class="field-item">
+          太さ [px]
+          <input class="input" type="number" min="1" step="1" v-model="computedSize" />
         </div>
       </div>
     </div>
@@ -25,6 +29,7 @@ export default defineComponent({
     title: String,
     modelRgb: String,
     modelAlpha: Number,
+    modelSize: Number,
   },
   data: function () {
     return {
@@ -49,6 +54,14 @@ export default defineComponent({
       },
       set: function (value: string) {
         this.$emit("update:modelAlpha", Number.parseInt(value));
+      },
+    },
+    computedSize: {
+      get: function () {
+        return this.modelSize;
+      },
+      set: function (value: string) {
+        this.$emit("update:modelSize", Number.parseInt(value));
       },
     },
   },
@@ -96,5 +109,7 @@ export default defineComponent({
 .field-item > input {
   margin: 0;
   padding: 0;
+  outline: none;
+  box-shadow: none;
 }
 </style>

@@ -1,8 +1,12 @@
-export interface IpcParameter<T extends CommunicatorParameter> {
+export interface IpcParameter<T extends object> {
   key: keyof T;
   value: any;
 }
 
-export interface CommunicatorParameter {
+export interface RendererToMainParameter {
   [k: string]: { req: any; res: any };
+}
+
+export interface MainToRendererParameter {
+  [k: string]: { req: any };
 }

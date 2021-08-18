@@ -34,16 +34,22 @@ export const createFrameWindow = async () => {
   window.on("move", () => config.set("frameBounds", window!.getBounds()));
   window.on("resize", () => config.set("frameBounds", window!.getBounds()));
 
+  const setMouse = (ignore: boolean) => {
+    if (ignore) {
+      window?.setIgnoreMouseEvents(true, { forward: true });
+    } else {
+      window?.setIgnoreMouseEvents(false);
+    }
+  };
+
+  setMouse(config.get("frameMode") === "freeze");
+
   config.registerWatcher((key) => {
     if (key === "frameStyle") {
       communicator.send("setStyle", config.get("frameStyle"));
     } else if (key === "frameMode") {
       communicator.send("setMode", config.get("frameMode"));
-      if (config.get("frameMode") === "freeze") {
-        window?.setIgnoreMouseEvents(true, { forward: true });
-      } else {
-        window?.setIgnoreMouseEvents(false);
-      }
+      setMouse(config.get("frameMode") === "freeze");
     }
   });
 

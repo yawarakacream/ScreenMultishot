@@ -15,7 +15,10 @@ import { defineComponent } from "vue";
 import DisplayTitle from "./DisplayTitle.vue";
 
 export default defineComponent({
-  props: ["title", "list"],
+  props: {
+    title: String,
+    list: Array,
+  },
   components: { DisplayTitle },
 });
 </script>

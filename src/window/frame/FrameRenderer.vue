@@ -1,7 +1,9 @@
 <template>
-  <div class="freeze" v-if="mode === 'freeze'" :style="style" />
-  <div class="movable" v-if="mode === 'movable'">
-    <span>ScreenMultishot</span>
+  <div class="container" :style="style">
+    <div class="freeze" v-if="mode === 'freeze'" />
+    <div class="movable" v-if="mode === 'movable'">
+      <span>ScreenMultishot</span>
+    </div>
   </div>
 </template>
 
@@ -10,7 +12,7 @@ import RendererCommunicator from "@/communicator/renderer-communicator";
 import { FrameMode, M2RFrameParameter, R2MFrameParameter } from "./frame-common";
 import { defineComponent } from "vue";
 
-const vm = defineComponent({
+export default defineComponent({
   name: "Frame",
   data: function () {
     const communicator = new RendererCommunicator<R2MFrameParameter, M2RFrameParameter>("frame", {
@@ -41,11 +43,13 @@ const vm = defineComponent({
     },
   },
 });
-
-export default vm;
 </script>
 
 <style scoped>
+.container {
+  margin: 0;
+  padding: 0;
+}
 .freeze {
   position: absolute;
   height: calc(100% - var(--size) * 2);
@@ -57,7 +61,6 @@ export default vm;
   box-shadow: none;
 }
 .movable {
-  --size: 8px;
   position: absolute;
   height: calc(100% - var(--size) * 2);
   width: calc(100% - var(--size) * 2);

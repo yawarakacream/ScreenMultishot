@@ -6,4 +6,5 @@ export interface R2MMenuParameter extends RendererToMainParameter {
   setConfig: { req: { key: keyof Config; value: any }; res: void };
   openStorageDirectoryDialog: { req: undefined; res: string | null };
   isValidStorageDirectory: { req: string; res: boolean };
+  onCameraButtonClicked: { req: undefined; res: void };
 }

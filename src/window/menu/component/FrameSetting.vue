@@ -9,11 +9,11 @@
         </div>
         <div class="field-item">
           透明度 {{ computedAlpha }} [%]
-          <input class="input" type="range" v-model="computedAlpha" />
+          <input class="input" type="range" min="0" max="100" v-model="computedAlpha" />
         </div>
         <div class="field-item">
-          太さ [px]
-          <input class="input" type="number" min="1" step="1" v-model="computedSize" />
+          太さ {{ computedSize }} [px]
+          <input class="input" type="range" min="0" max="100" v-model="computedSize" />
         </div>
       </div>
     </div>

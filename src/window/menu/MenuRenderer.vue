@@ -5,8 +5,8 @@
         <simple-button
           :title="'撮影'"
           :icon="'camera'"
-          :disabled="!isValidStorageDirectory || !isValidPhotoName || !isValidPdfName"
-          @click="onCameraClicked"
+          :disabled="!isValidStorageDirectory || !isValidPhotoName || !isValidPdfName || !frameFreeze"
+          @click="onCameraButtonClicked"
         />
         <simple-button :title="'ヘルプ'" :icon="'question-circle'" />
         <check-button :title="'枠を固定'" v-model="frameFreeze" />
@@ -94,7 +94,7 @@ export default defineComponent({
       frameSize,
       frameFreeze,
 
-      photoList: [{ name: "aaaaaaa.png?" }, { name: "aaaaaaa.png?" }],
+      photoList: [],
     };
   },
   components: {
@@ -111,8 +111,8 @@ export default defineComponent({
     openStorageDirectoryDialog: function () {
       this.storageDirectory = communicator.send("openStorageDirectoryDialog", undefined);
     },
-    onCameraClicked: function () {
-      console.log("camera");
+    onCameraButtonClicked: function () {
+      communicator.send("onCameraButtonClicked", undefined);
     },
   },
   watch: {

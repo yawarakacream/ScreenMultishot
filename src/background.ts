@@ -1,10 +1,10 @@
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, dialog } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import { ConfigContainer } from "./config/config-container";
+import { captureDesktopAsBytes, hasCapturePermission } from "./desktop-capturer";
+import { isDevelopment } from "./utility";
 import { createFrameWindow } from "./window/frame/frame-main";
 import { createMenuWindow } from "./window/menu/menu-main";
-
-const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{ scheme: "app", privileges: { secure: true, standard: true } }]);
@@ -30,6 +30,14 @@ let frame: BrowserWindow;
 let menu: BrowserWindow;
 
 app.on("ready", async () => {
+  if (!hasCapturePermission()) {
+    dialog.showErrorBox("エラー", "スクリーンショットを撮影する権限がありません。");
+    // Electron でも screenshot-desktop でも権限確認画面が出せないので，一度撮影してむりやり出す
+    await captureDesktopAsBytes();
+    app.quit();
+    return;
+  }
+
   frame = await createFrameWindow();
   menu = await createMenuWindow();
 
@@ -41,7 +49,6 @@ app.on("ready", async () => {
 
 app.on("before-quit", () => config.save());
 
-// Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === "win32") {
     process.on("message", (data) => {

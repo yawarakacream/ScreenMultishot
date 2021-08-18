@@ -1,9 +1,8 @@
+import { isDevelopment } from "@/utility";
 import { FrameModes } from "@/window/frame/frame-common";
 import fs from "fs";
 import path from "path";
 import { Config, isConfig } from "./config";
-
-const isDevelopment = process.env.NODE_ENV !== "production";
 
 const configFilePath = path.resolve(isDevelopment ? "./storage_for_dev" : process.cwd(), "config.json");
 const encoding = "utf8";
@@ -46,8 +45,8 @@ export class ConfigContainer {
       },
       frameMode: FrameModes[0],
       storageDirectory: path.resolve(isDevelopment ? "./storage_for_dev" : process.cwd(), "./storage"),
-      photoName: "aaa",
-      pdfName: "bbb",
+      photoName: "$year-$month-$day $hours-$minutes-$seconds",
+      pdfName: "bundle",
     };
   }
 

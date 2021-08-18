@@ -3,7 +3,9 @@ import { config, createWindow } from "@/background";
 import MainCommunicator from "@/communicator/main-communicator";
 import { R2MMenuParameter } from "./menu-common";
 import fs from "fs";
-import { EmptyObject } from "@/utility";
+import path from "path";
+import { EmptyObject, parseDateFormat } from "@/utility";
+import { captureDesktop } from "@/desktop-capturer";
 
 let window: BrowserWindow | undefined = undefined;
 
@@ -58,5 +60,27 @@ new MainCommunicator<R2MMenuParameter, EmptyObject>("menu", {
     } catch (e) {
       return false;
     }
+  },
+  onCameraButtonClicked() {
+    const directory = config.get("storageDirectory");
+    const photoName = config.get("photoName");
+    if (!directory) {
+      throw new Error("directory is null");
+    }
+    if (!photoName) {
+      throw new Error("photoName is null");
+    }
+
+    const file = path.resolve(directory, parseDateFormat(photoName, new Date()));
+    (async () => {
+      const { x, y, width, height } = config.get("frameBounds");
+      const { size } = config.get("frameStyle");
+      await captureDesktop(file, {
+        x: x + size,
+        y: y + size,
+        width: width - size * 2,
+        height: height - size * 2,
+      });
+    })();
   },
 });

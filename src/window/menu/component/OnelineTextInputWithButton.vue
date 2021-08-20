@@ -3,7 +3,14 @@
     <display-title :value="title" />
     <div class="input-container">
       <i class="button fas fa-folder-open" @click="() => $emit('click')" />
-      <input class="path" type="text" spellcheck="false" v-model="computedValue" :data-valid="valid" />
+      <input
+        class="input"
+        type="text"
+        spellcheck="false"
+        v-model="computedValue"
+        :data-valid="valid"
+        :readonly="editable.toString()"
+      />
     </div>
   </div>
 </template>
@@ -17,6 +24,7 @@ export default defineComponent({
     title: String,
     modelValue: String,
     valid: Boolean,
+    editable: Boolean,
   },
   components: { DisplayTitle },
   emits: ["update:modelValue", "click"],
@@ -60,7 +68,7 @@ export default defineComponent({
 .button:hover {
   opacity: 0.5;
 }
-.path {
+.input {
   width: 32px;
   margin: 0;
   padding: 0;
@@ -71,7 +79,7 @@ export default defineComponent({
   margin: 0;
   padding: 0;
 }
-.path[data-valid="false"] {
+.input[data-valid="false"] {
   border-bottom-color: red;
 }
 </style>

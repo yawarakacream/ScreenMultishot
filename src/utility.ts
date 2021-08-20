@@ -16,15 +16,6 @@ export const replaceMultiply = (str: string, map: { [key: string]: any }): strin
   });
 };
 
-interface DateFormat {
-  $year: number | string;
-  $month: number | string;
-  $day: number | string;
-  $hours: number | string;
-  $minutes: number | string;
-  $seconds: number | string;
-}
-
 const twoZeroPadding = (n: number) => (n < 10 ? `0${n}` : n);
 
 const dateFormatterKeys = ["$year", "$month", "$day", "$hours", "$minutes", "$seconds"] as const;

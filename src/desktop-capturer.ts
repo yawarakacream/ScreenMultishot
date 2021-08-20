@@ -1,6 +1,5 @@
 import { screen, systemPreferences } from "electron";
 import screenshot from "screenshot-desktop";
-import fs from "fs";
 import sharp from "sharp";
 
 export const hasCapturePermission = () => systemPreferences.getMediaAccessStatus("screen") === "granted";

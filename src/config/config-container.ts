@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import { Config, isConfig } from "./config";
 
-const configFilePath = path.resolve(isDevelopment ? "./storage_for_dev" : process.cwd(), "config.json");
+const configFilePath = path.resolve(isDevelopment ? "./storage4dev" : process.cwd(), "config.json");
 const encoding = "utf8";
 
 export class ConfigContainer {
@@ -44,9 +44,9 @@ export class ConfigContainer {
         size: 4,
       },
       frameMode: FrameModes[0],
-      storageDirectory: path.resolve(isDevelopment ? "./storage_for_dev" : process.cwd(), "./storage"),
+      storageDirectory: path.resolve(isDevelopment ? "./storage4dev" : process.cwd(), "./storage"),
       photoName: "$year-$month-$day $hours-$minutes-$seconds",
-      pdfName: "bundle",
+      pdfName: "$year-$month-$day $hours-$minutes-$seconds",
     };
   }
 

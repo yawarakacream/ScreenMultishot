@@ -1,10 +1,17 @@
+import { config } from "@/background";
 import { isDevelopment } from "@/utility";
 import { FrameModes } from "@/window/frame/frame-common";
+import { app } from "electron";
 import fs from "fs";
 import path from "path";
 import { Config, isConfig } from "./config";
 
-const configFilePath = path.resolve(isDevelopment ? "./storage4dev" : process.cwd(), "config.json");
+if (!app.getPath("userData").includes("screen-multishot")) {
+  app.quit();
+  throw new Error();
+}
+
+const configFilePath = path.resolve(app.getPath("userData"), "config.json");
 const encoding = "utf8";
 
 export class ConfigContainer {
@@ -26,6 +33,11 @@ export class ConfigContainer {
   }
 
   private getDefault() {
+    const storageDirectory = path.resolve(app.getPath("pictures"), "./ScreenMultishot");
+    if (!fs.existsSync(storageDirectory)) {
+      fs.mkdirSync(storageDirectory);
+    }
+
     return {
       version: 1,
       menuBounds: {
@@ -44,7 +56,7 @@ export class ConfigContainer {
         size: 4,
       },
       frameMode: FrameModes[0],
-      storageDirectory: path.resolve(isDevelopment ? "./storage4dev" : process.cwd(), "./storage"),
+      storageDirectory,
       photoName: "$year-$month-$day $hours-$minutes-$seconds",
       pdfName: "$year-$month-$day $hours-$minutes-$seconds",
     };

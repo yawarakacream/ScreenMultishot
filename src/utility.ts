@@ -25,7 +25,7 @@ export const parseDateFormat = (str: string, date: Date): string => {
   const map = {
     $year: date.getFullYear(),
     $month: twoZeroPadding(date.getMonth() + 1),
-    $day: twoZeroPadding(date.getDay()),
+    $day: twoZeroPadding(date.getDate()),
     $hours: twoZeroPadding(date.getHours()),
     $minutes: twoZeroPadding(date.getMinutes()),
     $seconds: twoZeroPadding(date.getSeconds()),

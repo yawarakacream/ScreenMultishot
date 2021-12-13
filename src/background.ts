@@ -18,7 +18,9 @@ export const createWindow = async (url: string, options: Electron.BrowserWindowC
     if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol("app");
-    win.loadURL("app://./" + url);
+    // win.loadURL("app://./" + url);
+    win.loadURL(`file://${__dirname}/index.html#${url}`);
+    // win.webContents.openDevTools();
   }
   win.focus();
   return win;
